@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1699866790 source:c:\users\iftekharulalam\desktop\new folder\mynotepad\main.cpp
+	<tchar.h>
+	<windows.h>
+	<iostream>
+	<fstream>
+	<math.h>
+	<string.h>
+	<objbase.h>
+	<CommCtrl.h>
+

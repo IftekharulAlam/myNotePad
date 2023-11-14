@@ -6,7 +6,13 @@
 
 #include <tchar.h>
 #include <windows.h>
-
+#include <iostream>
+#include <fstream>
+#include <math.h>
+#include <string.h>
+#include <objbase.h>
+#include <CommCtrl.h>
+using namespace std;
 #define File_menu_item_new_window   1
 #define File_menu_item_Open         2
 #define File_menu_item_Save         3
@@ -20,7 +26,9 @@
 
 void addMenu(HWND hwnd);
 void AddButtons(HWND hwnd);
+void fileWrite(wchar_t text[100]);
 HWND hwnd_for_text_input;
+
 /*  Declare Windows procedure  */
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 
@@ -107,7 +115,8 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
         case File_menu_item_Save:
             wchar_t text[100];
             GetWindowTextW(hwnd_for_text_input,text,100);
-            SetWindowTextW(hwnd,text);
+            fileWrite(text);
+            //SetWindowTextW(hwnd,text);
             break;
         case File_menu_item_Save_as:
             break;
@@ -123,6 +132,11 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
         }
         break;
     case WM_CREATE:
+        POINT point;
+        if (GetCursorPos(&point))
+        {
+            cout << point.x << "," << point.y << "\n";
+        }
         addMenu(hwnd);
         AddButtons(hwnd);
         break;
@@ -135,6 +149,16 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
 
     return 0;
 }
+void fileWrite(wchar_t text[100])
+{
+    ofstream myfile;
+    myfile.open ("example.txt");
+    for(int i =0; i < 100; i++)
+        myfile << text;
+    myfile.close();
+
+};
+
 void addMenu(HWND hwnd)
 {
 
@@ -184,6 +208,46 @@ void addMenu(HWND hwnd)
 void AddButtons(HWND hwnd)
 {
 
-   hwnd_for_text_input= CreateWindowW(L"Edit", L"", WS_VISIBLE | WS_CHILD,10,10,534,365,hwnd,NULL,NULL,NULL);
+    hwnd_for_text_input= CreateWindow(WC_EDIT,TEXT("Hi"), WS_VISIBLE | WS_CHILD,10,10,534,365,hwnd,NULL,NULL,NULL);
+
 
 };
+
+
+void addComboBox(HWND hwnd)
+{
+    int xpos = 100;            // Horizontal position of the window.
+    int ypos = 100;            // Vertical position of the window.
+    int nwidth = 200;          // Width of the window
+    int nheight = 200;         // Height of the window
+    HWND hwndParent =  hwnd; // Handle to the parent window
+
+    HWND hWndComboBox = CreateWindow(WC_COMBOBOX, TEXT(""),
+                                     CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
+                                     xpos, ypos, nwidth, nheight, hwndParent, NULL,NULL,
+                                     NULL);
+
+    TCHAR Planets[9][10] =
+    {
+        TEXT("Mercury"), TEXT("Venus"), TEXT("Terra"), TEXT("Mars"),
+        TEXT("Jupiter"), TEXT("Saturn"), TEXT("Uranus"), TEXT("Neptune"),
+        TEXT("Pluto??")
+    };
+
+    TCHAR A[16];
+    int  k = 0;
+
+    memset(&A,0,sizeof(A));
+    for (k = 0; k <= 8; k += 1)
+    {
+//        wcscpy_s(A, sizeof(A)/sizeof(TCHAR),  (TCHAR*)Planets[k]);
+
+        // Add string to combobox.
+        SendMessage(hWndComboBox,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM) A);
+    }
+
+
+    SendMessage(hWndComboBox, CB_SETCURSEL, (WPARAM)2, (LPARAM)0);
+
+
+}
